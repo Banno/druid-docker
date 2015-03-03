@@ -29,9 +29,6 @@ druidbroker:
     - zookeeper
   ports:
     - "8082:8082"
-  environment:
-    DRUID_HOST: 192.168.59.103
-    DRUID_ZK_SERVICE_HOST: 192.168.59.103:2181
 
 druidcoordinator:
   image: banno/druid-coordinator:latest
@@ -40,13 +37,6 @@ druidcoordinator:
     - postgres
   ports:
     - "8081:8081"
-  environment:
-    DRUID_HOST: 192.168.59.103
-    DRUID_ZK_SERVICE_HOST: 192.168.59.103:2181
-    POSTGRES_HOST: 192.168.59.103
-    POSTGRES_DATABASE: druid
-    POSTGRES_USER: druid
-    POSTGRES_PASSWORD: diurd
 
 druidhistorical:
   image: banno/druid-historical:latest
@@ -54,9 +44,6 @@ druidhistorical:
     - zookeeper
   ports:
     - "8083:8083"
-  environment:
-    DRUID_HOST: 192.168.59.103
-    DRUID_ZK_SERVICE_HOST: 192.168.59.103:2181
 
 druidrealtime:
   image: banno/druid-realtime:latest
@@ -65,9 +52,6 @@ druidrealtime:
     - kafka
   ports:
     - "8084:8084"
-  environment:
-    DRUID_HOST: 192.168.59.103
-    DRUID_ZK_SERVICE_HOST: 192.168.59.103:2181
 
 druid:
   image: ubuntu:14.04
