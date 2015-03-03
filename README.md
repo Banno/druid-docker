@@ -4,6 +4,10 @@ Example of running Druid broker, coordinator, historical and realtime nodes in s
 
 An eventual goal of this project is to provide Docker images for all of the Druid node types as automated builds on https://hub.docker.com.
 
+NOTE: this is very much a work-in-progress and learning exercise.
+
+![](http://0.media.collegehumor.cvcdn.com/30/69/5d86b2b73fe03210cba0725aafbe608c.gif)
+
 ## Quickstart
 
 ```
