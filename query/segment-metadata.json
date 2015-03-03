@@ -1,0 +1,8 @@
+{
+  "queryType": "segmentMetadata",
+  "dataSource": "tweets",
+  "intervals": [
+    "2015-03-03/2015-03-04"
+  ],
+  "merge": "true"
+}

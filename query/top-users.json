@@ -1,0 +1,18 @@
+{
+  "queryType": "topN",
+  "dataSource": "tweets",
+  "dimension": "user_id_hll",
+  "threshold": 10,
+  "metric": "count",
+  "granularity": "all",
+  "aggregations": [
+    {
+      "type": "longSum",
+      "name": "count",
+      "fieldName": "count"
+    }
+  ],
+  "intervals": [
+    "2015-03-03/2015-03-04"
+  ]
+}

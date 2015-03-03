@@ -1,0 +1,14 @@
+{
+  "queryType": "timeseries",
+  "dataSource": "tweets",
+  "intervals": [
+    "2010-01-01/2020-01-01"
+  ],
+  "granularity": "hour",
+  "aggregations": [
+    {
+      "type": "count",
+      "name": "tweet_count"
+    }
+  ]
+}

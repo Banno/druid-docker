@@ -1,0 +1,18 @@
+{
+  "queryType": "search",
+  "dataSource": "tweets",
+  "granularity": "all",
+  "searchDimensions": [
+    "language"
+  ],
+  "query": {
+    "type": "insensitive_contains",
+    "value": ""
+  },
+  "sort": {
+    "type": "lexicographic"
+  },
+  "intervals": [
+    "2015-01-01/2016-01-01"
+  ]
+}

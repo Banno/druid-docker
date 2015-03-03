@@ -1,0 +1,15 @@
+{
+  "queryType": "timeseries",
+  "dataSource": "tweets",
+  "intervals": [
+    "2010-01-01/2020-01-01"
+  ],
+  "granularity": "hour",
+  "aggregations": [
+    {
+      "type": "hyperUnique",
+      "name": "unique_users",
+      "fieldName": "user_id_hll"
+    }
+  ]
+}

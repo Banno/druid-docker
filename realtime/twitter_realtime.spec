@@ -1,11 +1,39 @@
 [
   {
     "dataSchema": {
-      "dataSource": "twitterstream",
+      "dataSource": "tweets",
+      "parser": {
+        "type": "string",
+        "parseSpec": {
+          "type": "json",
+          "format": "json",
+          "timestampSpec": {
+            "column": "timestamp",
+            "format": "millis"
+          },
+          "dimensionsSpec": {
+            "dimensions": [
+              "language",
+              "utcOffset",
+              "hashtags",
+              "urls"
+            ],
+            "dimensionExclusions": [],
+            "spatialDimensions": [
+              {
+                "dimName": "geo",
+                "dims": [
+                  "latitude",
+                  "longitude"
+                ]
+              }
+            ]
+          }
+        }
+      },
       "granularitySpec": {
-        "queryGranularity": "all",
-        "segmentGranularity": "hour",
-        "type": "uniform"
+        "segmentGranularity": "minute",
+        "queryGranularity": "none"
       },
       "metricsSpec": [
         {
@@ -13,24 +41,14 @@
           "type": "count"
         },
         {
-          "fieldName": "follower_count",
-          "name": "total_follower_count",
-          "type": "doubleSum"
-        },
-        {
-          "fieldName": "retweet_count",
+          "fieldName": "retweetCount",
           "name": "total_retweet_count",
-          "type": "doubleSum"
+          "type": "longSum"
         },
         {
-          "fieldName": "friends_count",
-          "name": "total_friends_count",
-          "type": "doubleSum"
-        },
-        {
-          "fieldName": "statuses_count",
-          "name": "total_statuses_count",
-          "type": "doubleSum"
+          "fieldName": "favoriteCount",
+          "name": "total_favorite_count",
+          "type": "longSum"
         },
         {
           "fieldName": "text",
@@ -38,49 +56,19 @@
           "type": "hyperUnique"
         },
         {
-          "fieldName": "user_id",
+          "fieldName": "userId",
           "name": "user_id_hll",
           "type": "hyperUnique"
         },
         {
-          "fieldName": "contributors",
-          "name": "contributors_hll",
+          "fieldName": "hashtags",
+          "name": "hashtags_hll",
           "type": "hyperUnique"
         },
         {
-          "fieldName": "htags",
-          "name": "htags_hll",
+          "fieldName": "urls",
+          "name": "urls_hll",
           "type": "hyperUnique"
-        },
-        {
-          "fieldName": "follower_count",
-          "name": "min_follower_count",
-          "type": "min"
-        },
-        {
-          "fieldName": "follower_count",
-          "name": "max_follower_count",
-          "type": "max"
-        },
-        {
-          "fieldName": "friends_count",
-          "name": "min_friends_count",
-          "type": "min"
-        },
-        {
-          "fieldName": "friends_count",
-          "name": "max_friends_count",
-          "type": "max"
-        },
-        {
-          "fieldName": "statuses_count",
-          "name": "min_statuses_count",
-          "type": "min"
-        },
-        {
-          "fieldName": "statuses_count",
-          "name": "max_statuses_count",
-          "type": "max"
         },
         {
           "fieldName": "retweet_count",
@@ -91,58 +79,48 @@
           "fieldName": "retweet_count",
           "name": "max_retweet_count",
           "type": "max"
+        },
+        {
+          "fieldName": "favoriteCount",
+          "name": "min_favorite_count",
+          "type": "min"
+        },
+        {
+          "fieldName": "favoriteCount",
+          "name": "max_favorite_count",
+          "type": "max"
         }
-      ],
-      "parser": {
-        "parseSpec": {
-          "dimensionsSpec": {
-            "dimensions": [
-              "text",
-              "htags",
-              "contributors",
-              "lat",
-              "lon",
-              "retweet_count",
-              "follower_count",
-              "friendscount",
-              "lang",
-              "utc_offset",
-              "statuses_count",
-              "user_id",
-              "ts"
-            ],
-            "dimensionExclusions": [],
-            "spatialDimensions": [
-              {
-                "dimName": "geo",
-                "dims": [
-                  "lat",
-                  "lon"
-                ]
-              }
-            ]
-          },
-          "format": "json",
-          "timestampSpec": {
-            "column": "ts",
-            "format": "millis"
-          }
-        }
-      }
+      ]
     },
     "ioConfig": {
+      "type": "realtime",
       "firehose": {
-        "maxEventCount": 500000,
-        "maxRunMinutes": 120,
-        "type": "twitzer"
+        "type": "kafka-0.8",
+        "consumerProps": {
+          "zookeeper.connect": "192.168.59.103:2181/kafka",
+          "zookeeper.connection.timeout.ms": "15000",
+          "zookeeper.session.timeout.ms": "15000",
+          "zookeeper.sync.time.ms": "5000",
+          "group.id": "druid-twitter-realtime",
+          "fetch.message.max.bytes": "1048586",
+          "auto.offset.reset": "largest",
+          "auto.commit.enable": "false"
+        },
+        "feed": "twitter-statuses"
       },
-      "type": "realtime"
+      "plumber": {
+        "type": "realtime"
+      }
     },
     "tuningConfig": {
-      "intermediatePersistPeriod": "PT10m",
-      "maxRowsInMemory": 500000,
       "type": "realtime",
-      "windowPeriod": "PT10m"
+      "maxRowsInMemory": 500000,
+      "intermediatePersistPeriod": "PT10m",
+      "windowPeriod": "PT10m",
+      "basePersistDirectory": "/tmp/realtime/basePersist",
+      "rejectionPolicy": {
+        "type": "serverTime"
+      }
     }
   }
 ]
