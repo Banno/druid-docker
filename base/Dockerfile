@@ -12,3 +12,5 @@ ADD common.runtime.properties /usr/local/druid/config/_common/
 # pull dependencies for Druid extensions - uses druid.extensions.coordinates in common.runtime.properties, so any time that file changes this will re-pulll the deps, which is annoying
 # this could probably be resolved by specifying -Ddruid.extensions.coordinates directly in this RUN command and doing this before the ADD... 
 RUN java -cp "/usr/local/druid/config/_common:/usr/local/druid/lib/*" io.druid.cli.Main tools pull-deps
+
+ENV DRUID_COMMON_JAVA_OPTIONS -server -Duser.timezone=UTC -Dfile.encoding=UTF-8
