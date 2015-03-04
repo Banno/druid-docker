@@ -5,15 +5,11 @@
     "2010-01-01/2020-01-01"
   ],
   "granularity": "hour",
-  "filter": {
-    "type": "selector",
-    "dimension": "language",
-    "value": "fr"
-  },
   "aggregations": [
     {
-      "type": "count",
-      "name": "tweet_count"
+      "type": "hyperUnique",
+      "name": "unique_hashtags",
+      "fieldName": "hashtags_hll"
     }
   ]
 }

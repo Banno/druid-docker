@@ -7,9 +7,9 @@
   "granularity": "hour",
   "aggregations": [
     {
-      "type": "hyperUnique",
-      "name": "unique_users",
-      "fieldName": "user_id_hll"
+      "type": "max",
+      "name": "max_retweet_count",
+      "fieldName": "max_retweet_count"
     }
   ]
 }

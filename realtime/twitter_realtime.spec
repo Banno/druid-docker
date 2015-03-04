@@ -16,7 +16,8 @@
               "language",
               "utcOffset",
               "hashtags",
-              "urls"
+              "urls",
+              "userId"
             ],
             "dimensionExclusions": [],
             "spatialDimensions": [

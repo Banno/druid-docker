@@ -1,17 +1,17 @@
 {
   "queryType": "topN",
   "dataSource": "tweets",
-  "dimension": "userId",
+  "dimension": "hashtags",
   "threshold": 10,
-  "metric": "tweet_count",
-  "granularity": "all",
+  "metric": "hashtag_count",
+  "granularity": "hour",
   "aggregations": [
     {
       "type": "count",
-      "name": "tweet_count"
+      "name": "hashtag_count"
     }
   ],
   "intervals": [
-    "2015-03-03/2015-03-05"
+    "2015-03-01/2015-04-01"
   ]
 }

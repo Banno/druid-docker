@@ -7,8 +7,9 @@
   "granularity": "minute",
   "aggregations": [
     {
-      "type": "count",
-      "name": "tweet_count"
+      "type": "cardinality",
+      "name": "unique_users_cardinality",
+      "fieldNames": ["userId"]
     }
   ]
 }
