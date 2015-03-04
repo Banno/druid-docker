@@ -44,6 +44,8 @@ druidhistorical:
     - zookeeper
   ports:
     - "8083:8083"
+  volumes:
+    - /mnt/sda1/druid:/tmp/druid/localStorage
 
 druidrealtime:
   image: banno/druid-realtime:latest
@@ -52,6 +54,8 @@ druidrealtime:
     - kafka
   ports:
     - "8084:8084"
+  volumes:
+    - /mnt/sda1/druid:/tmp/druid/localStorage
 
 druid:
   image: ubuntu:14.04
