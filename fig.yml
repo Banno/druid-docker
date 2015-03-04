@@ -19,26 +19,50 @@ kafka:
     KAFKA_ADVERTISED_PORT: 9092
     KAFKA_ZOOKEEPER_CONNECT: 192.168.59.103/kafka
     KAFKA_BROKER_ID: 1
+    KAFKA_NUM_PARTITIONS: 4
 
 twitterproducer:
   image: 
 
-druidbroker:
+druidbroker1:
   image: banno/druid-broker:latest
   links:
     - zookeeper
   ports:
     - "8082:8082"
+  environment:
+    DRUID_PORT: 8082
 
-druidcoordinator:
+druidbroker2:
+  image: banno/druid-broker:latest
+  links:
+    - zookeeper
+  ports:
+    - "8182:8182"
+  environment:
+    DRUID_PORT: 8182
+
+druidcoordinator1:
   image: banno/druid-coordinator:latest
   links:
     - zookeeper
     - postgres
   ports:
     - "8081:8081"
+  environment:
+    DRUID_PORT: 8081
 
-druidhistorical:
+druidcoordinator2:
+  image: banno/druid-coordinator:latest
+  links:
+    - zookeeper
+    - postgres
+  ports:
+    - "8181:8181"
+  environment:
+    DRUID_PORT: 8181
+
+druidhistorical1:
   image: banno/druid-historical:latest
   links:
     - zookeeper
@@ -46,8 +70,21 @@ druidhistorical:
     - "8083:8083"
   volumes:
     - /mnt/sda1/druid:/tmp/druid/localStorage
+  environment:
+    DRUID_PORT: 8083
 
-druidrealtime:
+druidhistorical2:
+  image: banno/druid-historical:latest
+  links:
+    - zookeeper
+  ports:
+    - "8183:8183"
+  volumes:
+    - /mnt/sda1/druid:/tmp/druid/localStorage
+  environment:
+    DRUID_PORT: 8183
+
+druidrealtime1:
   image: banno/druid-realtime:latest
   links:
     - zookeeper
@@ -56,12 +93,30 @@ druidrealtime:
     - "8084:8084"
   volumes:
     - /mnt/sda1/druid:/tmp/druid/localStorage
+  environment:
+    DRUID_PORT: 8084
+
+druidrealtime2:
+  image: banno/druid-realtime:latest
+  links:
+    - zookeeper
+    - kafka
+  ports:
+    - "8184:8184"
+  volumes:
+    - /mnt/sda1/druid:/tmp/druid/localStorage
+  environment:
+    DRUID_PORT: 8184
 
 druid:
   image: ubuntu:14.04
   command: echo "Druid rules"
   links:
-    - druidbroker
-    - druidcoordinator
-    - druidhistorical
-    - druidrealtime
+    - druidbroker1
+    - druidbroker2
+    - druidcoordinator1
+    - druidcoordinator2
+    - druidhistorical1
+    - druidhistorical2
+    - druidrealtime1
+    - druidrealtime2
