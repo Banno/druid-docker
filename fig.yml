@@ -108,6 +108,17 @@ druidrealtime2:
   environment:
     DRUID_PORT: 8184
 
+druidoverlord1:
+  image: banno/druid-overlord:latest
+  links:
+    - zookeeper
+    - postgres
+    - kafka
+  ports:
+    - "8085:8085"
+  environment:
+    DRUID_PORT: 8085
+
 druid:
   image: ubuntu:14.04
   command: echo "Druid rules"
@@ -118,5 +129,6 @@ druid:
     - druidcoordinator2
     - druidhistorical1
     - druidhistorical2
-    - druidrealtime1
-    - druidrealtime2
+    # - druidrealtime1
+    # - druidrealtime2
+    - druidoverlord1
