@@ -2,7 +2,7 @@
   "queryType": "timeseries",
   "dataSource": "tweets",
   "intervals": [
-    "2015-03-04T19:01:00Z/2015-03-04T19:02:00Z"
+    "2015-03-04/2015-04-04"
   ],
   "granularity": "minute",
   "aggregations": [
