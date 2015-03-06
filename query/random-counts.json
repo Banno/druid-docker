@@ -1,0 +1,14 @@
+{
+  "queryType": "timeseries",
+  "dataSource": "random",
+  "intervals": [
+    "2015-03-06T20:33:00Z/2015-03-06T20:34:00Z"
+  ],
+  "granularity": "second",
+  "aggregations": [
+    {
+      "type": "count",
+      "name": "random_count"
+    }
+  ]
+}
