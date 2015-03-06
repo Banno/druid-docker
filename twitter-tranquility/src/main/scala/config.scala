@@ -5,14 +5,15 @@ import twitter4j.conf.ConfigurationBuilder
 import java.util.Properties
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
-import com.metamx.tranquility.druid.{DruidBeams, DruidLocation, DruidRollup, SpecificDruidDimensions, DruidTuning}
+import com.metamx.tranquility.druid.{DruidBeams, DruidLocation, DruidRollup, SpecificDruidDimensions, DruidTuning, DruidBeamConfig}
 import com.metamx.tranquility.beam.ClusteredBeamTuning
 import com.metamx.common.Granularity
 import io.druid.query.aggregation.{CountAggregatorFactory, LongSumAggregatorFactory}
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory
 import io.druid.granularity.QueryGranularity
 import io.druid.data.input.impl.TimestampSpec
-import org.joda.time.Period
+import org.joda.time.{DateTime, Period}
+import org.scala_tools.time.Imports._
 
 trait Config {
   lazy val config = ConfigFactory.load()
@@ -30,6 +31,13 @@ trait TwitterConfig extends Config {
     .setOAuthAccessTokenSecret(oauthAccessTokenSecret)
     .build()
 }
+
+case class DruidBeamConfigImpl(
+  val firehoseGracePeriod: Period = 5.minutes,
+  val firehoseQuietPeriod: Period = 1.minute,
+  val firehoseRetryPeriod: Period = 1.minute,
+  val firehoseChunkSize: Int = 1000,
+  val indexRetryPeriod: Period = 1.minute) extends DruidBeamConfig
 
 trait DruidConfig extends Config {
   val indexService = "overlord" // Your overlord's druid.service, with slashes replaced by colons.
@@ -61,6 +69,12 @@ trait DruidConfig extends Config {
     .build();
   curator.start()
 
+  /*
+  http://druid.io/docs/0.7.0/Realtime-ingestion.html#constraints
+    - queryGranularity < intermediatePersistPeriod =< windowPeriod < segmentGranularity
+    - NONE < PT10S <= PT10S < MINUTE
+  */
+
   // Tranquility needs to be able to serialize your object type. By default this is done with Jackson. If you want to
   // provide an alternate serializer, you can provide your own via ```.objectWriter(...)```. In this case, we won't
   // provide one, so we're just using Jackson:
@@ -74,11 +88,16 @@ trait DruidConfig extends Config {
     .tuning(
       ClusteredBeamTuning(
         segmentGranularity = Granularity.MINUTE,
+        warmingPeriod = new Period("PT20S"),
         windowPeriod = new Period("PT10S"),
         partitions = 1,
         replicants = 1
       )
     )
-    .druidTuning(new DruidTuning(75000, Period.seconds(10), 0))
+    .druidTuning(new DruidTuning(75000, 10.seconds, 0))
+    .druidBeamConfig(DruidBeamConfigImpl(
+      firehoseGracePeriod = 1.minute, 
+      firehoseQuietPeriod = 10.seconds, 
+      firehoseRetryPeriod = 10.seconds))
     .buildService()
 }
