@@ -58,10 +58,10 @@ object Main extends App {
     .curator(curator)
     .discoveryPath(discoveryPath)
     .location(DruidLocation(indexService, firehosePattern, dataSource))
-    .rollup(DruidRollup(SpecificDruidDimensions(dimensions), aggregators, QueryGranularity.NONE))
+    .rollup(DruidRollup(SpecificDruidDimensions(dimensions), aggregators, indexGranularity = QueryGranularity.MINUTE))
     .tuning(
       ClusteredBeamTuning(
-        segmentGranularity = Granularity.MINUTE,
+        segmentGranularity = Granularity.HOUR,
         warmingPeriod = new Period("PT20S"),
         windowPeriod = new Period("PT10S"),
         partitions = 1,
