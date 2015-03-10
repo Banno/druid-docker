@@ -138,6 +138,7 @@ druidoverlord1:
     druid_indexer_storage_type: metadata
     druid_indexer_queue_startDelay: PT0M
     druid_indexer_runner_javaOpts: -server -Xmx256m
+    druid_indexer_runner_startPort: 8100
     druid_indexer_fork_property_druid_processing_numThreads: 1
     druid_indexer_fork_property_druid_computation_buffer_size: 100000000
     druid_service: overlord
