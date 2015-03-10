@@ -14,7 +14,6 @@ do
   if [[ "$var" =~ ^druid_ ]]; then
     env_var=`echo "$var" | sed -r "s/(.*)=.*/\1/g"` #extract just the env var name out of $var
     druid_property=`echo "$env_var" | tr _ .`
-    echo "var=$var, env_var=$env_var, druid_property=$druid_property"
     if egrep -q "(^|^#)$druid_property" $DRUID_PROPERTIES_FILE; then
         sed -r -i "s@(^|^#)($druid_property)=(.*)@\2=${!env_var}@g" $DRUID_PROPERTIES_FILE #note that no config values may contain an '@' char
     else
