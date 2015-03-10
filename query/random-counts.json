@@ -2,9 +2,9 @@
   "queryType": "timeseries",
   "dataSource": "random",
   "intervals": [
-    "2015-03-06T20:33:00Z/2015-03-06T20:34:00Z"
+    "2015-03-01/2015-04-01"
   ],
-  "granularity": "second",
+  "granularity": "minute",
   "aggregations": [
     {
       "type": "count",

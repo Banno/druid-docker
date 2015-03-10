@@ -2,4 +2,6 @@ FROM banno/druid-base:latest
 
 MAINTAINER Zach Cox zach.cox@banno.com
 
-ENTRYPOINT exec java -Ddruid.coordinator.load.timeout=PT30S $DRUID_COMMON_JAVA_OPTIONS -Xmx1g -Ddruid.port=$DRUID_PORT -Ddruid.coordinator.startDelay=PT5S -cp "/usr/local/druid/config/_common:/usr/local/druid/lib/*" io.druid.cli.Main server coordinator
+RUN /opt/druid/bin/pull-deps.sh '["io.druid.extensions:postgresql-metadata-storage"]'
+
+ENTRYPOINT exec /opt/druid/bin/start-node.sh coordinator

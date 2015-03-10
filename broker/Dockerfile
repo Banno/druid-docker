@@ -2,4 +2,5 @@ FROM banno/druid-base:latest
 
 MAINTAINER Zach Cox zach.cox@banno.com
 
-ENTRYPOINT exec java $DRUID_COMMON_JAVA_OPTIONS -Xmx1g -Ddruid.port=$DRUID_PORT -Ddruid.computation.buffer.size=67108864 -Ddruid.broker.cache.sizeInBytes=33554432 -cp "/usr/local/druid/config/_common:/usr/local/druid/lib/*" io.druid.cli.Main server broker
+#need to use exec so the java process from start-node.sh becomes PID 1, or maybe we could use the exec format? i.e. ["/opt/druid/bin/start-node.sh", "broker"]
+ENTRYPOINT exec /opt/druid/bin/start-node.sh broker

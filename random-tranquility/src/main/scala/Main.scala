@@ -75,8 +75,18 @@ object Main extends App {
       firehoseRetryPeriod = 10.seconds))
     .buildService()
 
+  val buffer = scala.collection.mutable.ListBuffer.empty[Event]
+  val maxBufferSize = 10
   while (true) {
-    druidService(Seq(Event.newRandomEvent))
+    buffer += Event.newRandomEvent
+    if (buffer.size >= maxBufferSize) {
+      println(s"Sending ${buffer.size} events to Druid...")
+      val t1 = System.nanoTime
+      druidService(buffer)
+      val t2 = System.nanoTime
+      println(s"Sent ${buffer.size} events to Druid in ${(t2-t1)/1e6} msec")
+      buffer.clear()
+    }
     Thread.sleep(100)
   }
 }
