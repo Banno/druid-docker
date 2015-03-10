@@ -82,6 +82,39 @@ The more complex option uses Indexers instead of Realtime nodes:
   - broker
   - tranquility?
 
+druid-base image:
+  - download & install released version of Druid
+  - delete all .properties files
+  - start-druid-node.sh 
+    - meant to be used as the ENTRYPOINT in each node type image
+    - reusable shell script that can start any druid node type
+    - parameterized so specific node types can reuse it
+    - replaces/appends env vars named `druid.x` into common.runtime.properties
+    - try to use docker link env vars to wire things together? e.g. zookeeper, postgres
+    - use exec to run the druid node, so signals (e.g. SIGTERM) get sent directly to druid jvm process
+    - `DRUID_JAVA_OPTIONS` env var
+  - pull-deps.sh
+    - runs `java ... io.druid.cli.Main tools pull-deps` 
+    - downloads extension dependencies to local dir
+    - meant to be run during image building (i.e. in a RUN instruction)
+    - if extension deps are not included in image, they will be downloaded when container is run (which takes forever)
+    - needs to be parameterized to download any possible extension deps
+
+druid-[nodeType] images:
+  - RUN /druid/pull-deps.sh [extensions]
+    - downloads extension deps that this node type needs into local dir, cached in image
+  - ENTRYPOINT /druid/start-node.sh [nodeType]
+    - puts env vars into common.runtime.properties (or into /druid/config/[nodeType]/runtime.properties?)
+    - runs `exec java ... [nodeType]`
+  - EXPOSE?
+
+fig.yml:
+  - define a service for each node type, using that node type's docker image
+  - use links to run dependent services
+  - use environment to set env vars (e.g. host, port, zookeeper)
+  - use ports to expose the proper ports
+
+
 ### Druid Configuration
 
 Druid will load files named `common.runtime.properties` and `runtime.properties` that it finds on the classpath. There is also a config `druid.properties.file` that Druid might use
