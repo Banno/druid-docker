@@ -41,7 +41,7 @@ object Main extends App {
   val discoveryPath = "/druid/discovery" // Your overlord's druid.discovery.curator.path.
   val dataSource = "random"
   val dimensions = IndexedSeq(
-    "eventId", //if eventId is not included as a dimension then druid only counts 15-21 events/min; with eventId it counts 575-576 events/min
+    // "eventId", //if eventId is not included as a dimension then druid only counts 15-21 events/min; with eventId it counts 575-576 events/min
     "category")
   val aggregators = Seq(
     new CountAggregatorFactory("count"), 
