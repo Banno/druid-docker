@@ -1,6 +1,6 @@
 ## Overview
 
-Example of running Druid broker, coordinator, historical and realtime nodes in separate Docker containers, along with Zookeeper and Postgres in their own Docker containers, all wired together via fig.
+Example of running Druid broker, coordinator, historical and overlord nodes in separate Docker containers, along with Zookeeper and Postgres in their own Docker containers, all wired together via fig.
 
 An eventual goal of this project is to provide Docker images for all of the Druid node types as automated builds on https://hub.docker.com.
 
@@ -13,13 +13,22 @@ NOTE: this is very much a work-in-progress and learning exercise.
 ```
 ./build.sh
 fig up -d druid
+cd random-tranquility
+sbt run
 ```
 
-All Druid nodes (broker, coordinator, historical and realtime) should start up pretty quickly. Check the logs of any node using `fig logs [nodeType]`, e.g. `fig logs druidcoordinator` or `fig logs druidrealtime`.
+All Druid nodes (broker, coordinator, historical and overlord) should start up pretty quickly. Check the logs of any node using `fig logs [nodeType]`, e.g. `fig logs druidcoordinator1` or `fig logs druidoverlord1`.
 
 Once the coordinator is up, its web console should be accesible at http://192.168.59.103:8081.
 
-Send queries to the broker at http://192.168.59.103:8082/druid/v2/ (TODO example query)
+Once the overlord is up, its web console should be accessible at http://192.168.59.103:8085/console.html.
+
+Send queries to the broker at http://192.168.59.103:8082/druid/v2/. Some example queries are provided, e.g.:
+
+```
+cd query
+./query.sh random-counts.json
+```
 
 To shut everything down: `fig kill && fig rm --force`
 
