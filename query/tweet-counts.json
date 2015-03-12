@@ -4,11 +4,16 @@
   "intervals": [
     "2015-03-04/2015-04-04"
   ],
-  "granularity": "hour",
+  "granularity": "minute",
   "aggregations": [
     {
+      "type": "longSum",
+      "fieldName": "count",
+      "name": "total_count"
+    },
+    {
       "type": "count",
-      "name": "tweet_count"
+      "name": "row_count"
     }
   ]
 }

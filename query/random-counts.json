@@ -7,8 +7,9 @@
   "granularity": "minute",
   "aggregations": [
     {
-      "type": "count",
-      "name": "random_count"
+      "type": "longSum",
+      "name": "total_count",
+      "fieldName": "count"
     }
   ]
 }
