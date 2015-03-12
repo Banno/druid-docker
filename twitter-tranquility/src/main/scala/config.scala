@@ -94,7 +94,10 @@ trait DruidConfig extends Config {
         replicants = 1
       )
     )
-    .druidTuning(new DruidTuning(75000, 10.seconds, 0))
+    .druidTuning(new DruidTuning(
+      maxRowsInMemory = 75000, 
+      intermediatePersistPeriod = 10.seconds, //how often commits occur against incoming stream, does this really need to be 10 secs?
+      maxPendingPersists = 0))
     .druidBeamConfig(DruidBeamConfigImpl(
       firehoseGracePeriod = 1.minute, 
       firehoseQuietPeriod = 10.seconds, 
