@@ -3,24 +3,43 @@ package com.banno.twitterkafka
 import twitter4j.{Status, StatusListener}
 import com.twitter.finagle.Service
 
-trait SendTweetsToDruid extends StatusListener {
-  val buffer = scala.collection.mutable.ListBuffer.empty[Tweet]
-  val maxBufferSize = 60
-  def druidService: Service[Seq[Tweet], Int]
+trait DruidStatusListener extends StatusListener {
+  def tweetDruidService: TweetDruidService
+  def hashtagAggregateDruidService: HashtagAggregateDruidService
+
+  val tweetBuffer = scala.collection.mutable.ListBuffer.empty[Tweet]
+  val hashtagAggregateBuffer = scala.collection.mutable.HashMap.empty[String, HashtagAggregate]
+  val maxTweetBufferSize = 60
+  val maxHashtagAggregateBufferSize = 60
 
   override def onStatus(status: Status): Unit = {
-    buffer += Tweet.fromStatus(status)
-    maybeSendTweetsToDruid()
+    tweetBuffer += Tweet.fromStatus(status)
+
+    HashtagAggregate.fromStatus(status).foreach { ha =>
+      hashtagAggregateBuffer.update(ha.hashtag, hashtagAggregateBuffer.getOrElse(ha.hashtag, ha))
+    }
+
+    maybeSendToDruid()
   }
 
-  def maybeSendTweetsToDruid(): Unit = {
-    if (buffer.size >= maxBufferSize) {
-      println(s"Sending ${buffer.size} tweets to Druid...")
+  private[this] def maybeSendToDruid(): Unit = {
+    if (tweetBuffer.size >= maxTweetBufferSize) {
+      println(s"Sending ${tweetBuffer.size} tweets to Druid...")
       val t1 = System.nanoTime
-      druidService(buffer)
+      tweetDruidService.beam(tweetBuffer)
       val t2 = System.nanoTime
-      println(s"Sent ${buffer.size} tweets to Druid in ${(t2-t1)/1e6} msec")
-      buffer.clear()
+      println(s"Sent ${tweetBuffer.size} tweets to Druid in ${(t2-t1)/1e6} msec")
+      tweetBuffer.clear()
+    }
+
+    if (hashtagAggregateBuffer.size >= maxHashtagAggregateBufferSize) {
+      val aggregates = hashtagAggregateBuffer.map(_._2).toList
+      println(s"Sending ${aggregates.size} hashtag-aggregates to Druid...")
+      val t1 = System.nanoTime
+      hashtagAggregateDruidService.beam(aggregates)
+      val t2 = System.nanoTime
+      println(s"Sent ${aggregates.size} hashtag-aggregates to Druid in ${(t2-t1)/1e6} msec")
+      hashtagAggregateBuffer.clear()
     }
   }
 

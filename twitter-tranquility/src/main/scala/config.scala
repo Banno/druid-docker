@@ -8,7 +8,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry
 import com.metamx.tranquility.druid.{DruidBeams, DruidLocation, DruidRollup, SpecificDruidDimensions, DruidTuning, DruidBeamConfig}
 import com.metamx.tranquility.beam.ClusteredBeamTuning
 import com.metamx.common.Granularity
-import io.druid.query.aggregation.{CountAggregatorFactory, LongSumAggregatorFactory}
+import io.druid.query.aggregation.{CountAggregatorFactory, LongSumAggregatorFactory, AggregatorFactory}
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory
 import io.druid.granularity.QueryGranularity
 import io.druid.data.input.impl.TimestampSpec
@@ -39,30 +39,46 @@ case class DruidBeamConfigImpl(
   val firehoseChunkSize: Int = 1000,
   val indexRetryPeriod: Period = 1.minute) extends DruidBeamConfig
 
-trait DruidConfig extends Config {
-  val indexService = "overlord" // Your overlord's druid.service, with slashes replaced by colons.
-  val firehosePattern = "druid:firehose:%s" // Make up a service pattern, include %s somewhere in it.
-  val discoveryPath = "/druid/discovery" // Your overlord's druid.discovery.curator.path.
+class TweetDruidService extends DruidConfig[Tweet] {
   val dataSource = "tweets"
+
   val dimensions = IndexedSeq(
     "language",
     "utcOffset",
     "hashtags",
     "urls",
     "userId") //TODO spatialDimensions for latitude and longitude
+
   val aggregators = Seq(
-    new CountAggregatorFactory("count"), 
+    new CountAggregatorFactory("count"),
     new LongSumAggregatorFactory("total_retweet_count", "retweetCount"),
     new HyperUniquesAggregatorFactory("user_id_hll", "userId"),
     new HyperUniquesAggregatorFactory("hashtags_hll", "hashtags"),
     new HyperUniquesAggregatorFactory("urls_hll", "urls"))
 
-  // Tranquility needs to be able to extract timestamps from your object type (in this case, Map<String, Object>).
   val timestamper = (tweet: Tweet) => tweet.timestamp
+}
 
-  val timestampSpec = new TimestampSpec("timestamp", "auto")
+class HashtagAggregateDruidService extends DruidConfig[HashtagAggregate] {
+  val dataSource = "hashtag-aggregates"
+  val dimensions = IndexedSeq("hashtag", "usernames")
+  val aggregators = Nil
+  val timestamper = (ha: HashtagAggregate) => ha.timestamp
+}
 
-  val curator = CuratorFrameworkFactory
+trait DruidConfig[T] extends Config {
+  val indexService = "overlord" // Your overlord's druid.service, with slashes replaced by colons.
+  val firehosePattern = "druid:firehose:%s" // Make up a service pattern, include %s somewhere in it.
+  val discoveryPath = "/druid/discovery" // Your overlord's druid.discovery.curator.path.
+
+  def dataSource: String
+  def dimensions: IndexedSeq[String]
+  def aggregators: Seq[AggregatorFactory]
+  def timestamper: T => DateTime // Tranquility needs to be able to extract timestamps from your object type (in this case, Map<String, Object>).
+
+  lazy val timestampSpec = new TimestampSpec("timestamp", "auto")
+
+  lazy val curator = CuratorFrameworkFactory
     .builder()
     .connectString("192.168.59.103:2181") //TODO config
     .retryPolicy(new ExponentialBackoffRetry(1000, 20, 30000))
@@ -78,7 +94,7 @@ trait DruidConfig extends Config {
   // Tranquility needs to be able to serialize your object type. By default this is done with Jackson. If you want to
   // provide an alternate serializer, you can provide your own via ```.objectWriter(...)```. In this case, we won't
   // provide one, so we're just using Jackson:
-  val druidService = DruidBeams
+  lazy val druidService = DruidBeams
     .builder(timestamper)
     .timestampSpec(timestampSpec)
     .curator(curator)
@@ -96,8 +112,10 @@ trait DruidConfig extends Config {
     )
     .druidTuning(new DruidTuning(75000, 10.seconds, 0))
     .druidBeamConfig(DruidBeamConfigImpl(
-      firehoseGracePeriod = 1.minute, 
-      firehoseQuietPeriod = 10.seconds, 
+      firehoseGracePeriod = 1.minute,
+      firehoseQuietPeriod = 10.seconds,
       firehoseRetryPeriod = 10.seconds))
     .buildService()
+
+  def beam(ts: Seq[T]) = druidService(ts)
 }

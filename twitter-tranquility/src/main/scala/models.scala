@@ -41,3 +41,20 @@ object TweetObjectWriter extends ObjectWriter[Tweet] {
   def asBytes(tweet: Tweet): Array[Byte] = ???//Jsonz.toJsonBytes(tweet)
   def batchAsBytes(tweets: TraversableOnce[Tweet]): Array[Byte] = ???//Jsonz.toJsonBytes(tweets.toSeq)
 }
+
+case class HashtagAggregate(
+  hashtag: String,
+  usernames: Seq[String],
+  timestamp: DateTime
+) {
+  def ++(other: HashtagAggregate) = copy(usernames = usernames ++ other.usernames distinct,
+                                         timestamp = if (timestamp isBefore other.timestamp) other.timestamp else timestamp)
+}
+
+object HashtagAggregate {
+  def fromStatus(status: Status): Seq[HashtagAggregate] = {
+    status.getHashtagEntities.map { hashtagEntity =>
+      HashtagAggregate(hashtagEntity.getText, List(status.getUser.getName), new DateTime(status.getCreatedAt.getTime))
+    }
+  }
+}
