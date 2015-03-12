@@ -12,14 +12,20 @@ import io.druid.data.input.impl.TimestampSpec
 import org.joda.time.{DateTime, Period}
 import org.scala_tools.time.Imports._
 import scala.util.Random
+import java.util.UUID
 
-case class Event(category: String, value: Int, timestamp: DateTime)
+case class Event(
+  eventId: String,
+  category: String, 
+  value: Int, 
+  timestamp: DateTime)
 
 object Event {
+  def newEventId = UUID.randomUUID.toString
   val categories = Seq("C1", "C2", "C3")
   def randomCategory = categories(Random.nextInt(categories.size))
   def randomValue = Random.nextInt(100)
-  def newRandomEvent = Event(randomCategory, randomValue, new DateTime)
+  def newRandomEvent = Event(newEventId, randomCategory, randomValue, DateTime.now)
 }
 
 case class DruidBeamConfigImpl(
@@ -34,7 +40,9 @@ object Main extends App {
   val firehosePattern = "druid:firehose:%s" // Make up a service pattern, include %s somewhere in it.
   val discoveryPath = "/druid/discovery" // Your overlord's druid.discovery.curator.path.
   val dataSource = "random"
-  val dimensions = IndexedSeq("category")
+  val dimensions = IndexedSeq(
+    "eventId", //if eventId is not included as a dimension then druid only counts 15-21 events/min; with eventId it counts 575-576 events/min
+    "category")
   val aggregators = Seq(
     new CountAggregatorFactory("count"), 
     new LongSumAggregatorFactory("total_value", "value"))
@@ -78,7 +86,9 @@ object Main extends App {
   val buffer = scala.collection.mutable.ListBuffer.empty[Event]
   val maxBufferSize = 10
   while (true) {
-    buffer += Event.newRandomEvent
+    val event = Event.newRandomEvent
+    // println(event)
+    buffer += event
     if (buffer.size >= maxBufferSize) {
       println(s"Sending ${buffer.size} events to Druid...")
       val t1 = System.nanoTime
