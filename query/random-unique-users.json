@@ -1,0 +1,17 @@
+{
+  "queryType": "timeseries",
+  "dataSource": "random",
+  "intervals": [
+    "2015-03-01/2015-04-01"
+  ],
+  "granularity": "minute",
+  "aggregations": [
+    {
+      "type": "cardinality",
+      "name": "unique_users",
+      "fieldNames": [
+        "userId"
+      ]
+    }
+  ]
+}

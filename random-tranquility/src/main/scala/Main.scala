@@ -16,6 +16,7 @@ import java.util.UUID
 
 case class Event(
   eventId: String,
+  userId: String,
   category: String, 
   value: Int, 
   timestamp: DateTime)
@@ -24,8 +25,10 @@ object Event {
   def newEventId = UUID.randomUUID.toString
   val categories = Seq("C1", "C2", "C3")
   def randomCategory = categories(Random.nextInt(categories.size))
+  val userIds = (1 to 5) map { _ => newEventId }
+  def randomUserId = userIds(Random.nextInt(userIds.size))
   def randomValue = Random.nextInt(100)
-  def newRandomEvent = Event(newEventId, randomCategory, randomValue, DateTime.now)
+  def newRandomEvent = Event(newEventId, randomUserId, randomCategory, randomValue, DateTime.now)
 }
 
 case class DruidBeamConfigImpl(
@@ -42,10 +45,12 @@ object Main extends App {
   val dataSource = "random"
   val dimensions = IndexedSeq(
     // "eventId", //if eventId is not included as a dimension then druid only counts 15-21 events/min; with eventId it counts 575-576 events/min
+    "userId",
     "category")
   val aggregators = Seq(
     new CountAggregatorFactory("count"), 
-    new LongSumAggregatorFactory("total_value", "value"))
+    new LongSumAggregatorFactory("total_value", "value"),
+    new HyperUniquesAggregatorFactory("userIdHll", "userId"))
 
   // Tranquility needs to be able to extract timestamps from your object type (in this case, Map<String, Object>).
   val timestamper = (event: Event) => event.timestamp
