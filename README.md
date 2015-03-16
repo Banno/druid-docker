@@ -137,3 +137,41 @@ Druid does allow system properties to override configs in the .properties files,
 One approach to using env vars in .properties files is to have a "sidecar" shell script as the Docker image's ENTRYPOINT, which takes all env vars named `DRUID_X_Y`, convert them into strings like `x.y=value` and then replace/append those into the .properties file using e.g. sed. That script would then run the Druid java command. Care must be taken with this approach so that any signals (e.g. SIGTERM) get sent to the java process and not to the shell script (probably need to use `exec`).
 
 Another option is to create generic base images using the stock .properties files, and then create sub-images with the actual .properties files to use overwriting the stock ones. A downside of this approach is that all config values are hard-coded and cannot be dynamic (e.g. random port chosen by Marathon). This also leads to creating separate Docker images for different environments, e.g. staging and production.
+
+### Mesos
+
+Lowest barrier-to-entry for running Druid on Mesos is probably to tell Marathon to run all of the nodes
+  - write some marathon json, make a couple http posts, that's about it
+  - there are definitely advantages to writing a mesos framework long-term, but for now we just need druid on mesos
+  - if there are must-haves that marathon can't provide, then it will be good to figure those out now
+
+Each Druid node type has its own Docker image, so will need its own Marathon application
+  - no way to have 1 marathon application run separate druid node types
+  - this is something a custom mesos framework could do
+  - can still scale each node type independently
+  - marathon directory, with 1 json file per node type
+
+Do we need to constrain where marathon runs the node types?
+  - Any requirements to run different node types on different machines?
+  - Any requirements to run instances of same node type on different machines?
+    - Guessing we probably want instances of same node type on different machines, for availability
+    - e.g. don't run two historical nodes on same machine in case it fails
+    - e.g. don't run two broker nodes on same machine in case it fails
+  - How would these machine-uniqueness constraints be implemented via marathon?
+    - https://mesosphere.github.io/marathon/docs/constraints.html
+    - hostname:UNIQUE runs instance of same node type on different machines
+    - hostname:LIKE:[regex] runs instance of same node type only on machines with hostnames that match the regex (e.g. hostname:LIKE:mesos-slave[1-3])
+    - [attribute]:LIKE:[regex] if we tag our mesos slaves with attributes we can tell marathon to only run instances of node type on those machines
+
+Can we use standard Druid port numbers? Or do we need to use Marathon-assigned random ports?
+  - If there is only ever 1 instance of a given node type on a machine, then can probably use standard ports
+  - If we do need to use dynamic ports, Druid has its own internal service discovery via Marathon for everything to find everything else
+  - Could probably also use that externally if needed (e.g. to locate a broker node to query)
+  - Should probably LB multiple brokers anyways for availability
+  - Tranquility does not even need to know host:port of overlord, just zookeeper
+  - Can probably start with standard ports if we're enforcing max 1 instance of each node type per machine, and support dynamic ports later if needed
+
+What about other config?
+  - e.g. postgres metadata connection
+  - e.g. buffer sizes
+  - since the druid docker containers now allow env vars like `druid_x_y_z` to override any configs like `druid.x.y.z` we can just use env vars in marathon json

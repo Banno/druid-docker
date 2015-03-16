@@ -1,0 +1,19 @@
+{
+  "id": "/druid/broker",
+  "container": {
+    "docker": {
+      "image": "banno/druid-broker:latest"
+    },
+    "type": "DOCKER"
+  },
+  "cpus": 0.1,
+  "mem": 612,
+  "instances": 1,
+  "env": {
+    "DRUID_JAVA_OPTIONS": "-Xmx512M",
+    "druid_host": "192.168.59.103",
+    "druid_port": "8082",
+    "druid_zk_service_host": "192.168.59.103:2181",
+    "druid_processing_buffer_sizeBytes": "52428800"
+  }
+}

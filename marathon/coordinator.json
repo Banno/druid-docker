@@ -1,0 +1,24 @@
+{
+  "id": "/druid/coordinator",
+  "container": {
+    "docker": {
+      "image": "banno/druid-coordinator:latest"
+    },
+    "type": "DOCKER"
+  },
+  "cpus": 0.1,
+  "mem": 612,
+  "instances": 1,
+  "env": {
+    "DRUID_JAVA_OPTIONS": "-Xmx512M",
+    "druid_host": "192.168.59.103",
+    "druid_port": "8081",
+    "druid_zk_service_host": "192.168.59.103:2181",
+    "druid_metadata_storage_type": "postgresql",
+    "druid_metadata_storage_connector_connectURI": "jdbc:postgresql://192.168.59.103:5432/druid",
+    "druid_metadata_storage_connector_user": "druid",
+    "druid_metadata_storage_connector_password": "diurd",
+    "druid_coordinator_load_timeout": "PT30S",
+    "druid_coordinator_startDelay": "PT5S"
+  }
+}

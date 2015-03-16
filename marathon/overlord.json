@@ -1,0 +1,38 @@
+{
+  "id": "/druid/overlord",
+  "container": {
+    "docker": {
+      "image": "banno/druid-overlord:latest"
+    },
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/tmp/druid/localStorage",
+        "hostPath": "/mnt/raid0/druid",
+        "mode": "RW"
+      }
+    ]
+  },
+  "cpus": 0.1,
+  "mem": 1024,
+  "instances": 1,
+  "env": {
+    "DRUID_JAVA_OPTIONS": "-Xmx512M",
+    "druid_host": "192.168.59.103",
+    "druid_port": "8085",
+    "druid_zk_service_host": "192.168.59.103:2181",
+    "druid_metadata_storage_type": "postgresql",
+    "druid_metadata_storage_connector_connectURI": "jdbc:postgresql://192.168.59.103:5432/druid",
+    "druid_metadata_storage_connector_user": "druid",
+    "druid_metadata_storage_connector_password": "diurd",
+    "druid_indexer_runner_type": "local",
+    "druid_indexer_storage_type": "metadata",
+    "druid_indexer_queue_startDelay": "PT0M",
+    "druid_indexer_runner_javaOpts": "-server -Xmx256m",
+    "druid_indexer_runner_startPort": "8100",
+    "druid_indexer_fork_property_druid_processing_numThreads": "1",
+    "druid_indexer_fork_property_druid_computation_buffer_size": "100000000",
+    "druid_service": "overlord",
+    "druid_processing_buffer_sizeBytes": "26214400"
+  }
+}
