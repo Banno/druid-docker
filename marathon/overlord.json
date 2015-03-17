@@ -15,7 +15,7 @@
   },
   "cpus": 0.1,
   "mem": 1024,
-  "instances": 1,
+  "instances": 2,
   "env": {
     "DRUID_JAVA_OPTIONS": "-Xmx512M",
     "druid_zk_service_host": "192.168.59.103:2181",
