@@ -15,11 +15,15 @@
   },
   "cpus": 0.1,
   "mem": 612,
-  "instances": 1,
+  "instances": 2,
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ],
   "env": {
     "DRUID_JAVA_OPTIONS": "-Xmx512M",
-    "druid_host": "192.168.59.103",
-    "druid_port": "8083",
     "druid_zk_service_host": "192.168.59.103:2181",
     "druid_segmentCache_locations": "[{\"path\":\"/var/tmp/druid/indexCache\",\"maxSize\":5000000000}]",
     "druid_processing_buffer_sizeBytes": "52428800",

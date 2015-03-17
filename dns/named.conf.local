@@ -1,0 +1,4 @@
+zone "dev.banno.com" {
+  type master;
+  file "/etc/bind/db.dev.banno.com";
+};

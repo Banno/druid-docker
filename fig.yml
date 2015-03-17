@@ -156,9 +156,16 @@ druid:
     - druidhistorical2
     - druidoverlord1
 
+dns:
+  build: ./dns
+  ports:
+    - "53:53"
+    - "53:53/udp"
+
 mesosmaster:
   image: registry.banno-internal.com/mesos-master:latest
-  hostname: boot2docker
+  dns: 172.17.42.1
+  hostname: mesosmaster.dev.banno.com
   ports:
     - "5050:5050"
   environment:
@@ -167,13 +174,14 @@ mesosmaster:
     MESOS_WORK_DIR: /mesos
     MESOS_QUORUM: 1
     MESOS_CLUSTER: development
-    MESOS_HOSTNAME: boot2docker
   links:
+    - dns
     - zookeeper
 
 mesosslave1:
   image: registry.banno-internal.com/mesos-slave:latest
-  hostname: boot2docker
+  dns: 172.17.42.1
+  hostname: mesosslave1.dev.banno.com
   ports:
     - "5151:5151"
   environment:
@@ -183,7 +191,7 @@ mesosslave1:
     MESOS_MASTER: zk://192.168.59.103:2181/mesos
     MESOS_WORK_DIR: /mesos
     MESOS_PORT: "5151"
-    MESOS_HOSTNAME: boot2docker
+    MESOS_HOSTNAME: mesosslave1.dev.banno.com
     DOCKER_CERT_PATH:
     DOCKER_HOST:
     DOCKER_TLS_VERIFY:
@@ -193,32 +201,32 @@ mesosslave1:
   links:
     - zookeeper
 
-# mesosslave2:
-#   image: registry.banno-internal.com/mesos-slave:latest
-#   dns: 172.17.42.1
-#   hostname: mesosslave2.dev.banno.com
-#   ports:
-#     - "5152:5152"
-#   environment:
-#     MESOS_CONTAINERIZERS: docker
-#     MESOS_DOCKER_STOP_TIMEOUT: 30secs
-#     MESOS_LOG_DIR: /var/log
-#     MESOS_MASTER: zk://192.168.59.103:2181/mesos
-#     MESOS_WORK_DIR: /mesos
-#     MESOS_PORT: "5152"
-#     MESOS_HOSTNAME: mesosslave2.dev.banno.com
-#     DOCKER_CERT_PATH:
-#     DOCKER_HOST:
-#     DOCKER_TLS_VERIFY:
-#   volumes:
-#     - /sys:/sys
-#     - /Users:/Users
-#   links:
-#     - dns
-#     - zookeeper
+mesosslave2:
+  image: registry.banno-internal.com/mesos-slave:latest
+  dns: 172.17.42.1
+  hostname: mesosslave2.dev.banno.com
+  ports:
+    - "5152:5152"
+  environment:
+    MESOS_CONTAINERIZERS: docker
+    MESOS_DOCKER_STOP_TIMEOUT: 30secs
+    MESOS_LOG_DIR: /var/log
+    MESOS_MASTER: zk://192.168.59.103:2181/mesos
+    MESOS_WORK_DIR: /mesos
+    MESOS_PORT: "5152"
+    MESOS_HOSTNAME: mesosslave2.dev.banno.com
+    DOCKER_CERT_PATH:
+    DOCKER_HOST:
+    DOCKER_TLS_VERIFY:
+  volumes:
+    - /sys:/sys
+    - /Users:/Users
+  links:
+    - zookeeper
 
 marathon:
   image: mesosphere/marathon:v0.8.0
+  dns: 172.17.42.1
   ports:
     - "8080:8080"
   command: --master zk://192.168.59.103:2181/mesos --zk zk://192.168.59.103:2181/marathon
@@ -226,5 +234,5 @@ marathon:
     - zookeeper
     - mesosmaster
     - mesosslave1
-    # - mesosslave2
+    - mesosslave2
     - postgres
