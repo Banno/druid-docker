@@ -2,6 +2,9 @@
 
 NODE_TYPE=$1
 
+export druid_host=${druid_host:-$HOST} #Marathon sets $HOST to the Mesos slave machine's hostname
+export druid_port=${druid_port:-$PORT} #Marathon sets $PORT to a random port number
+
 #TODO try to get zookeeper host/port from link env vars?
 
 #TODO try to get postgres host/port from link env vars?
