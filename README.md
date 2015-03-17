@@ -170,8 +170,26 @@ Can we use standard Druid port numbers? Or do we need to use Marathon-assigned r
   - Should probably LB multiple brokers anyways for availability
   - Tranquility does not even need to know host:port of overlord, just zookeeper
   - Can probably start with standard ports if we're enforcing max 1 instance of each node type per machine, and support dynamic ports later if needed
+  - Druid base image start-node.sh can now fall back to druid.host=$HOST and druid.port=$PORT
 
 What about other config?
   - e.g. postgres metadata connection
   - e.g. buffer sizes
   - since the druid docker containers now allow env vars like `druid_x_y_z` to override any configs like `druid.x.y.z` we can just use env vars in marathon json
+
+Observations running 2 of each node type:
+  - Can query either broker node
+    - Should be able to round-robin load balance multiple brokers using haproxy
+  - One overlord is the leader
+  - One coordinator is the leader
+
+Definitely need to test failover:
+  - If one overlord dies, does the other one take over tasks?
+    - What's the difference between overlord and peon task dying?
+  - If one coordinator dies, does the other one take over coordination?
+  - If one historical dies, do other historicals take over its segments?
+
+Special considerations when running on Mesos locally in boot2docker:
+  - With more than one Mesos slave in boot2docker, and more than one of a druid node type, have to use random ports, otherwise e.g. broker on each mesos slave will try to bind to port 8082, all but one will fail
+  - Random ports makes querying brokers more painful, as you have to look up the host & port to use
+  - Need to add something like "127.0.0.1 mesosslave1.dev.banno.com mesosslave2.dev.banno.com" to boot2docker's /etc/hosts, so that overlord & peons can communicate

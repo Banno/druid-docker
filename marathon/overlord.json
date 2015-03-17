@@ -15,9 +15,16 @@
   },
   "cpus": 0.1,
   "mem": 1024,
-  "instances": 2,
+  "instances": 1,
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ],
   "env": {
     "DRUID_JAVA_OPTIONS": "-Xmx512M",
+    "druid_port": "8085",
     "druid_zk_service_host": "192.168.59.103:2181",
     "druid_metadata_storage_type": "postgresql",
     "druid_metadata_storage_connector_connectURI": "jdbc:postgresql://192.168.59.103:5432/druid",
