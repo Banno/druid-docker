@@ -158,8 +158,7 @@ druid:
 
 mesosmaster:
   image: registry.banno-internal.com/mesos-master:latest
-  # dns: 172.17.42.1
-  hostname: 192.168.59.103
+  hostname: boot2docker
   ports:
     - "5050:5050"
   environment:
@@ -168,15 +167,13 @@ mesosmaster:
     MESOS_WORK_DIR: /mesos
     MESOS_QUORUM: 1
     MESOS_CLUSTER: development
-    MESOS_HOSTNAME: 192.168.59.103
+    MESOS_HOSTNAME: boot2docker
   links:
-    # - dns
     - zookeeper
 
 mesosslave1:
   image: registry.banno-internal.com/mesos-slave:latest
-  # dns: 172.17.42.1
-  hostname: 192.168.59.103
+  hostname: boot2docker
   ports:
     - "5151:5151"
   environment:
@@ -186,7 +183,7 @@ mesosslave1:
     MESOS_MASTER: zk://192.168.59.103:2181/mesos
     MESOS_WORK_DIR: /mesos
     MESOS_PORT: "5151"
-    MESOS_HOSTNAME: 192.168.59.103
+    MESOS_HOSTNAME: boot2docker
     DOCKER_CERT_PATH:
     DOCKER_HOST:
     DOCKER_TLS_VERIFY:
@@ -194,7 +191,6 @@ mesosslave1:
     - /sys:/sys
     - /Users:/Users
   links:
-    # - dns
     - zookeeper
 
 # mesosslave2:
@@ -223,12 +219,10 @@ mesosslave1:
 
 marathon:
   image: mesosphere/marathon:v0.8.0
-  # dns: 172.17.42.1
   ports:
     - "8080:8080"
   command: --master zk://192.168.59.103:2181/mesos --zk zk://192.168.59.103:2181/marathon
   links:
-    # - dns
     - zookeeper
     - mesosmaster
     - mesosslave1
