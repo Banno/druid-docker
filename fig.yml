@@ -8,6 +8,12 @@ postgres:
   ports:
     - "5432:5432"
 
+hdfs:
+  image: sequenceiq/hadoop-docker:2.4.1 #seems to be the easiest way to get hdfs in a docker container
+  ports:
+    - "9000:9000"
+    - "50070:50070"
+
 druidbroker1:
   image: banno/druid-broker:latest
   links:
@@ -76,10 +82,9 @@ druidhistorical1:
   image: banno/druid-historical:latest
   links:
     - zookeeper
+    - hdfs
   ports:
     - "8083:8083"
-  volumes:
-    - /mnt/sda1/druid:/tmp/druid/localStorage
   environment:
     DRUID_JAVA_OPTIONS: -Xmx512M
     druid_host: 192.168.59.103
@@ -88,6 +93,8 @@ druidhistorical1:
     druid_segmentCache_locations: "[{\"path\":\"/var/tmp/druid/indexCache\",\"maxSize\":5000000000}]"
     druid_processing_buffer_sizeBytes: 52428800 #50 * 1024 * 1024
     druid_server_maxSize: 5000000000
+    druid_storage_type: hdfs
+    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
 
 druidhistorical2:
   image: banno/druid-historical:latest
@@ -95,8 +102,6 @@ druidhistorical2:
     - zookeeper
   ports:
     - "8183:8183"
-  volumes:
-    - /mnt/sda1/druid:/tmp/druid/localStorage
   environment:
     DRUID_JAVA_OPTIONS: -Xmx512M
     druid_host: 192.168.59.103
@@ -105,12 +110,15 @@ druidhistorical2:
     druid_segmentCache_locations: "[{\"path\":\"/var/tmp/druid/indexCache\",\"maxSize\":5000000000}]"
     druid_processing_buffer_sizeBytes: 52428800 #50 * 1024 * 1024
     druid_server_maxSize: 5000000000
+    druid_storage_type: hdfs
+    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
 
 druidoverlord1:
   image: banno/druid-overlord:latest
   links:
     - zookeeper
     - postgres
+    - hdfs
   ports:
     - "8085:8085"
     - "8100:8100"
@@ -123,8 +131,6 @@ druidoverlord1:
     - "8107:8107"
     - "8108:8108"
     - "8109:8109"
-  volumes:
-    - /mnt/sda1/druid:/tmp/druid/localStorage
   environment:
     DRUID_JAVA_OPTIONS: -Xmx512M
     druid_host: 192.168.59.103
@@ -143,6 +149,8 @@ druidoverlord1:
     druid_indexer_fork_property_druid_computation_buffer_size: 100000000
     druid_service: overlord
     druid_processing_buffer_sizeBytes: 26214400 #25 * 1024 * 1024
+    druid_storage_type: hdfs
+    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
 
 druid:
   image: ubuntu:14.04
@@ -155,6 +163,9 @@ druid:
     - druidhistorical1
     - druidhistorical2
     - druidoverlord1
+
+###################################################################################################
+# Mesos support below here
 
 dns:
   build: ./dns

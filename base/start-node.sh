@@ -9,7 +9,7 @@ export druid_port=${druid_port:-$PORT} #Marathon sets $PORT to a random port num
 
 #TODO try to get postgres host/port from link env vars?
 
-DRUID_PROPERTIES_FILE=/opt/druid/config/_common/common.runtime.properties
+export DRUID_PROPERTIES_FILE=/opt/druid/config/_common/common.runtime.properties
 
 #put env vars in common.runtime.properties, they will be named like druid_x_y_z and we need to rename to druid.x.y.z
 for var in `env` #$var will contain something like: druid_host=192.168.59.103
@@ -25,9 +25,14 @@ do
   fi
 done
 
+#this is an ugly hack to implement Solution #1 from https://github.com/druid-io/druid/pull/1022
+#tldr we have to put the druid-hdfs-storage dependencies at the end of the classpath, but exclude druid-hdfs-storage itself, to make hdfs deep storage actually work
+export DRUID_EXTENSIONS_CLASSPATH=:$(find /opt/druid/repository -type f -name "*.jar" -not -path "*io/druid/extensions*" -printf '%p:' | sed 's/:$//')
+
 #dumping all the env vars and final config file helps debugging
 env | sort
 cat $DRUID_PROPERTIES_FILE
 
 #exec should make the java process PID 1 so that any signals sent to this container go to that process
-exec java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*" io.druid.cli.Main server $NODE_TYPE
+echo java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTENSIONS_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE
+exec java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTENSIONS_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE

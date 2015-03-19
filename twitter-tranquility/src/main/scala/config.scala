@@ -84,10 +84,13 @@ trait DruidConfig extends Config {
     .curator(curator)
     .discoveryPath(discoveryPath)
     .location(DruidLocation(indexService, firehosePattern, dataSource))
-    .rollup(DruidRollup(SpecificDruidDimensions(dimensions), aggregators, indexGranularity = QueryGranularity.MINUTE))
+    .rollup(DruidRollup(
+      SpecificDruidDimensions(dimensions), 
+      aggregators, 
+      indexGranularity = QueryGranularity.MINUTE))
     .tuning(
       ClusteredBeamTuning(
-        segmentGranularity = Granularity.HOUR,
+        segmentGranularity = Granularity.MINUTE,
         warmingPeriod = new Period("PT20S"),
         windowPeriod = new Period("PT10S"),
         partitions = 1,
