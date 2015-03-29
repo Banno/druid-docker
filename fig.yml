@@ -131,6 +131,8 @@ druidoverlord1:
     - "8107:8107"
     - "8108:8108"
     - "8109:8109"
+  volumes:
+    - /Users:/Users #for local firehose in batch index tasks
   environment:
     DRUID_JAVA_OPTIONS: -Xmx512M
     druid_host: 192.168.59.103
