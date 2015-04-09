@@ -25,14 +25,12 @@ do
   fi
 done
 
-#this is an ugly hack to implement Solution #1 from https://github.com/druid-io/druid/pull/1022
-#tldr we have to put the druid-hdfs-storage dependencies at the end of the classpath, but exclude druid-hdfs-storage itself, to make hdfs deep storage actually work
-export DRUID_EXTENSIONS_CLASSPATH=:$(find /opt/druid/repository -type f -name "*.jar" -not -path "*io/druid/extensions*" -printf '%p:' | sed 's/:$//')
+export DRUID_EXTRA_CLASSPATH=${DRUID_EXTRA_CLASSPATH:-}
 
 #dumping all the env vars and final config file helps debugging
 env | sort
 cat $DRUID_PROPERTIES_FILE
 
 #exec should make the java process PID 1 so that any signals sent to this container go to that process
-echo java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTENSIONS_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE
-exec java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTENSIONS_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE
+echo java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTRA_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE
+exec java -server -Duser.timezone=UTC -Dfile.encoding=UTF-8 $DRUID_JAVA_OPTIONS -cp "/opt/druid/config/_common:/opt/druid/lib/*${DRUID_EXTRA_CLASSPATH}" io.druid.cli.Main server $NODE_TYPE
