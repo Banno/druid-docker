@@ -8,20 +8,13 @@ postgres:
   ports:
     - "5432:5432"
 
-hadoop:
-  image: sequenceiq/hadoop-docker:2.4.1 #seems to be the easiest way to get hdfs in a docker container
+hadoop: #used for both HDFS deep storage and Hadoop batch indexing
+  image: sequenceiq/hadoop-docker:2.4.1
   volumes:
     - /Users:/Users
   ports:
     - "9000:9000"
     - "50070:50070"
-    - "50030:50030"
-    - "50010:50010"
-    - "50075:50075"
-    - "50020:50020"
-    - "50090:50090"
-    - "8030:8030"
-    - "8040:8040"
     - "8088:8088"
 
 druidbroker1:
