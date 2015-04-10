@@ -1,0 +1,10 @@
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>mapred.job.tracker</name>
+        <value>HOSTNAME:54311</value>
+    </property>
+</configuration>

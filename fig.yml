@@ -9,13 +9,15 @@ postgres:
     - "5432:5432"
 
 hadoop: #used for both HDFS deep storage and Hadoop batch indexing
-  image: sequenceiq/hadoop-docker:2.4.1
+  # image: sequenceiq/hadoop-docker:2.4.1
+  build: ./hadoop
   volumes:
     - /Users:/Users
   ports:
     - "9000:9000"
     - "50070:50070"
     - "8088:8088"
+    - "8032:8032"
 
 druidbroker1:
   image: banno/druid-broker:latest
@@ -157,6 +159,9 @@ druidoverlord1:
     druid_processing_buffer_sizeBytes: 26214400 #25 * 1024 * 1024
     druid_storage_type: hdfs
     druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
+    druid_indexer_fork_property_druid_storage_type: hdfs
+    druid_indexer_fork_property_druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
+    druid_indexer_task_hadoopWorkingPath: hdfs://192.168.59.103:9000/druid-working
 
 druid:
   image: ubuntu:14.04
