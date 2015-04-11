@@ -9,7 +9,7 @@ postgres:
     - "5432:5432"
 
 hadoop: #used for both HDFS deep storage and Hadoop batch indexing
-  image: sequenceiq/hadoop-docker:2.6.0
+  image: sequenceiq/hadoop-docker:2.4.1
   # build: ./hadoop
   volumes:
     - /Users:/Users
