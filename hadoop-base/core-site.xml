@@ -1,0 +1,4 @@
+<property>
+  <name>fs.default.name</name>
+  <value>hadoop:9000</value>
+</property>
