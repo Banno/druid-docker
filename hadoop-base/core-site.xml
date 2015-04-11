@@ -1,4 +1,10 @@
-<property>
-  <name>fs.default.name</name>
-  <value>hadoop:9000</value>
-</property>
+<configuration>
+  <property>
+    <name>fs.default.name</name>
+    <value>hdfs://hadoop:9000</value>
+  </property>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://hadoop:9000</value>
+  </property>
+</configuration>
