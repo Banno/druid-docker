@@ -5,14 +5,14 @@
   </property>
   <property>
     <name>yarn.resourcemanager.address</name>
-    <value>hadoop:8032</value>
+    <value>hadoop.dev.banno.com:8032</value>
   </property>
   <property>
     <name>yarn.resourcemanager.scheduler.address</name>
-    <value>hadoop:8030</value>
+    <value>hadoop.dev.banno.com:8030</value>
   </property>
   <property>
     <name>yarn.resourcemanager.resource-tracker.address</name>
-    <value>hadoop:8031</value>
+    <value>hadoop.dev.banno.com:8031</value>
   </property>
 </configuration>

@@ -13,11 +13,26 @@ hadoop: #used for both HDFS deep storage and Hadoop batch indexing
   # build: ./hadoop
   volumes:
     - /Users:/Users
+  links:
+    - dns
+  dns: 172.17.42.1
+  hostname: hadoop.dev.banno.com
   ports:
-    - "9000:9000"
-    - "50070:50070"
-    - "8088:8088"
-    - "8032:8032"
+    - "9000:9000" #hdfs name node client
+    - "50070:50070" #hdfs name node web ui
+    - "8088:8088" #yarn web ui
+    - "8032:8032" #yarn resource manager client
+    - "50075:50075"
+    - "50020:50020"
+    - "50090:50090"
+    - "50010:50010"
+    - "8030:8030"
+    - "55071:55071"
+    - "8031:8031"
+    - "8033:8033"
+    - "8040:8040"
+    - "8042:8042"
+    - "13562:13562"
 
 druidbroker1:
   image: banno/druid-broker:latest
@@ -121,10 +136,13 @@ druidhistorical2:
 
 druidoverlord1:
   image: banno/druid-overlord:latest
+  hostname: overlord.dev.banno.com
+  dns: 172.17.42.1
   links:
     - zookeeper
     - postgres
     - hadoop
+    - dns
   ports:
     - "8085:8085"
     - "8100:8100"
