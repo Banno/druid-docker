@@ -33,6 +33,7 @@ hadoop: #used for both HDFS deep storage and Hadoop batch indexing
     - "8040:8040"
     - "8042:8042"
     - "13562:13562"
+    - "10020:10020" #job history port
 
 druidbroker1:
   image: banno/druid-broker:latest
@@ -180,6 +181,7 @@ druidoverlord1:
     druid_indexer_fork_property_druid_storage_type: hdfs
     druid_indexer_fork_property_druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
     druid_indexer_task_hadoopWorkingPath: hdfs://192.168.59.103:9000/druid-working
+    druid_indexer_task_defaultHadoopCoordinates: "[\"org.apache.hadoop:hadoop-client:2.4.1\"]"
 
 druid:
   image: ubuntu:14.04
