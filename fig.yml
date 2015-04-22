@@ -13,10 +13,6 @@ hadoop: #used for both HDFS deep storage and Hadoop batch indexing
   build: ./hadoop
   volumes:
     - /Users:/Users
-  links:
-    - dns
-  dns: 172.17.42.1
-  # hostname: hadoop.dev.banno.com
   hostname: hadoop
   ports:
     - "9000:9000" #hdfs name node client
@@ -103,11 +99,9 @@ druidcoordinator2:
 
 druidhistorical1:
   image: banno/druid-historical:latest
-  dns: 172.17.42.1
   links:
     - zookeeper
     - hadoop
-    - dns
   ports:
     - "8083:8083"
   environment:
@@ -123,11 +117,9 @@ druidhistorical1:
 
 druidhistorical2:
   image: banno/druid-historical:latest
-  dns: 172.17.42.1
   links:
     - zookeeper
     - hadoop
-    - dns
   ports:
     - "8183:8183"
   environment:
@@ -143,13 +135,10 @@ druidhistorical2:
 
 druidoverlord1:
   image: banno/druid-overlord:latest
-  hostname: overlord.dev.banno.com
-  dns: 172.17.42.1
   links:
     - zookeeper
     - postgres
     - hadoop
-    - dns
   ports:
     - "8085:8085"
     - "8100:8100"
