@@ -1,6 +1,6 @@
-FROM sequenceiq/hadoop-docker:2.4.1
+FROM sequenceiq/hadoop-docker:2.3.0
 
-ADD mapred-site.xml.template $HADOOP_PREFIX/etc/hadoop/mapred-site.xml.template
+ADD core-site.xml.template $HADOOP_PREFIX/etc/hadoop/
 
 ADD bootstrap2.sh /etc/bootstrap2.sh
 RUN chown root:root /etc/bootstrap2.sh
