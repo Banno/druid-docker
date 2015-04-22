@@ -32,6 +32,18 @@ cd query
 
 To shut everything down: `fig kill && fig rm --force`
 
+## Hadoop Batch Indexing
+
+```
+./build.sh
+fig up -d druid
+http://hadoop.dev.banno.com:50070 and wait for safe mode to be turned off, takes about 30 secs
+execute stuff in druid-pageviews/hdfs-commands to get data file into hdfs
+./ingest.sh task5-hadoop.json <========== exec this in druid-pageviews to start hadoop index task
+http://192.168.59.103:8085/console.html to make sure task is running, and check its logs
+http://hadoop.dev.banno.com:8088 to check druid mapreduce job in yarn ui
+```
+
 ## Design Notes
 
 Druid [node types](http://druid.io/docs/0.7.0/Design.html):

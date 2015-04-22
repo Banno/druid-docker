@@ -6,6 +6,6 @@
   <!-- TODO since we're using YARN do we even need this config? -->
   <property>
     <name>mapred.job.tracker</name>
-    <value>hadoop.dev.banno.com:8032</value>
+    <value>hadoop:8032</value>
   </property>
 </configuration>

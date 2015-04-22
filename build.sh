@@ -2,6 +2,8 @@
 
 TAG="latest"
 
+fig build postgres
+fig build hadoop
 docker build -t banno/druid-base:$TAG base
 docker build -t banno/druid-hadoop-base:$TAG hadoop-base
 docker build -t banno/druid-broker:$TAG broker
