@@ -1,0 +1,22 @@
+<configuration>
+  <property>
+    <name>yarn.application.classpath</name>
+    <value>/opt/hadoop/etc/hadoop, /opt/hadoop/share/hadoop/common/*, /opt/hadoop/share/hadoop/common/lib/*, /opt/hadoop/share/hadoop/hdfs/*, /opt/hadoop/share/hadoop/hdfs/lib/*, /opt/hadoop/share/hadoop/mapreduce/*, /opt/hadoop/share/hadoop/mapreduce/lib/*, /opt/hadoop/share/hadoop/yarn/*, /opt/hadoop/share/hadoop/yarn/lib/*</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.address</name>
+    <value>hadoop:8032</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.scheduler.address</name>
+    <value>hadoop:8030</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.resource-tracker.address</name>
+    <value>hadoop:8031</value>
+  </property>
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>hadoop:10020</value>
+  </property>
+</configuration>

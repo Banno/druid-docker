@@ -1,4 +1,4 @@
-FROM banno/druid-base:latest
+FROM banno/druid-hadoop-base:latest
 
 MAINTAINER Zach Cox zach.cox@banno.com
 

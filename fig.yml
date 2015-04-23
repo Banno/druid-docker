@@ -9,13 +9,29 @@ postgres:
     - "5432:5432"
 
 hadoop: #used for both HDFS deep storage and Hadoop batch indexing
-  image: sequenceiq/hadoop-docker:2.4.1
+  # image: sequenceiq/hadoop-docker:2.4.1
+  build: ./hadoop #putting hostname into core-site.xml is fixed in later versions, but not 2.3.0
   volumes:
     - /Users:/Users
+  hostname: hadoop
   ports:
-    - "9000:9000"
-    - "50070:50070"
-    - "8088:8088"
+    - "9000:9000" #hdfs name node client
+    - "50070:50070" #hdfs name node web ui
+    - "8088:8088" #yarn web ui
+    - "8032:8032" #yarn resource manager client
+    - "50075:50075"
+    - "50020:50020"
+    - "50090:50090"
+    - "50010:50010"
+    - "8030:8030"
+    - "55071:55071"
+    - "8031:8031"
+    - "8033:8033"
+    - "8040:8040"
+    - "8042:8042"
+    - "13562:13562"
+    - "10020:10020" #job history
+    - "19888:19888" #job history web ui
 
 druidbroker1:
   image: banno/druid-broker:latest
@@ -97,7 +113,7 @@ druidhistorical1:
     druid_processing_buffer_sizeBytes: 52428800 #50 * 1024 * 1024
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
-    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
+    druid_storage_storageDirectory: hdfs://hadoop:9000/druid
 
 druidhistorical2:
   image: banno/druid-historical:latest
@@ -115,7 +131,7 @@ druidhistorical2:
     druid_processing_buffer_sizeBytes: 52428800 #50 * 1024 * 1024
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
-    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
+    druid_storage_storageDirectory: hdfs://hadoop:9000/druid
 
 druidoverlord1:
   image: banno/druid-overlord:latest
@@ -156,7 +172,11 @@ druidoverlord1:
     druid_service: overlord
     druid_processing_buffer_sizeBytes: 26214400 #25 * 1024 * 1024
     druid_storage_type: hdfs
-    druid_storage_storageDirectory: hdfs://192.168.59.103:9000/druid
+    druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    druid_indexer_fork_property_druid_storage_type: hdfs
+    druid_indexer_fork_property_druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    druid_indexer_task_hadoopWorkingPath: hdfs://hadoop:9000/druid-working
+    druid_indexer_task_defaultHadoopCoordinates: "[\"org.apache.hadoop:hadoop-client:2.3.0\"]"
 
 druid:
   image: ubuntu:14.04

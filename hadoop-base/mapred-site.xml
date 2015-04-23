@@ -1,0 +1,20 @@
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+  <!-- -Xmx256m is probably not what we want for real usage -->
+  <property>
+    <name>mapreduce.map.java.opts</name>
+    <value>-server -Xmx256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps</value>
+  </property>
+  <property>
+    <name>mapreduce.reduce.java.opts</name>
+    <value>-server -Xmx256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps</value>
+  </property>
+  <!-- TODO since we're using YARN do we even need this config? -->
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>hadoop:8032</value>
+  </property>
+</configuration>
