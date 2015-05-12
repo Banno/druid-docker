@@ -1,11 +1,11 @@
-FROM banno/druid-base:latest
+FROM registry.banno-internal.com/druid-base:latest
 
 MAINTAINER Zach Cox zach.cox@banno.com
 
-ENV HADOOP_VERSION 2.3.0
+ENV HADOOP_VERSION 2.0.0-cdh4.4.0
 
-RUN curl -s http://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -xz -C /opt/
-#ADD hadoop-${HADOOP_VERSION}.tar.gz /opt/
+#RUN curl -s http://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -xz -C /opt/
+ADD hadoop-${HADOOP_VERSION}.tar.gz /opt/
 RUN cd /opt && ln -s ./hadoop-${HADOOP_VERSION} hadoop
 
 ENV HADOOP_PREFIX /opt/hadoop

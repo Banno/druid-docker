@@ -1,4 +1,4 @@
-FROM banno/druid-base:latest
+FROM registry.banno-internal.com/druid-base:latest
 
 MAINTAINER Zach Cox zach.cox@banno.com
 
