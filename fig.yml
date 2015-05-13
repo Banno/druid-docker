@@ -115,6 +115,7 @@ druidhistorical1:
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
     druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    HADOOP_USER_NAME: druid
 
 druidhistorical2:
   image: registry.banno-internal.com/druid-historical:latest
@@ -133,6 +134,7 @@ druidhistorical2:
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
     druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    HADOOP_USER_NAME: druid
 
 druidoverlord1:
   image: registry.banno-internal.com/druid-overlord:latest
@@ -178,6 +180,7 @@ druidoverlord1:
     druid_indexer_fork_property_druid_storage_storageDirectory: hdfs://hadoop:9000/druid
     druid_indexer_task_hadoopWorkingPath: hdfs://hadoop:9000/druid-working
     druid_indexer_task_defaultHadoopCoordinates: "[\"org.apache.hadoop:hadoop-client:2.0.0-cdh4.4.0\"]"
+    HADOOP_USER_NAME: druid
 
 druid:
   image: ubuntu:14.04

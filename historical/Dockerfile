@@ -4,7 +4,4 @@ MAINTAINER Zach Cox zach.cox@banno.com
 
 RUN /opt/druid/bin/pull-deps.sh '["io.druid.extensions:druid-hdfs-storage"]'
 
-RUN chown -R druid:druid /opt/druid /opt/druid-$DRUID_VERSION
-USER druid
-
 ENTRYPOINT exec /opt/druid/bin/start-node.sh historical
