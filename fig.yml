@@ -9,9 +9,7 @@ postgres:
     - "5432:5432"
 
 hadoop: #used for both HDFS deep storage and Hadoop batch indexing
-  # image: sequenceiq/hadoop-docker:2.4.1
-  # build: ./hadoop #putting hostname into core-site.xml is fixed in later versions, but not 2.3.0
-  image: registry.banno-internal.com/hadoop-docker:2.0.0-cdh4.4.0
+  image: registry.banno-internal.com/hadoop-docker:2.0.0-mr1-cdh4.4.0
   volumes:
     - /Users:/Users
   hostname: hadoop
@@ -33,6 +31,7 @@ hadoop: #used for both HDFS deep storage and Hadoop batch indexing
     - "13562:13562"
     - "10020:10020" #job history
     - "19888:19888" #job history web ui
+    - "50030:50030" #jobtracker web ui
 
 druidbroker1:
   image: registry.banno-internal.com/druid-broker:latest
@@ -115,6 +114,8 @@ druidhistorical1:
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
     druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    druid_mapred_job_tracker_host: hadoop
+    druid_mapred_job_tracker_port: 8021
     HADOOP_USER_NAME: druid
 
 druidhistorical2:
@@ -134,6 +135,8 @@ druidhistorical2:
     druid_server_maxSize: 5000000000
     druid_storage_type: hdfs
     druid_storage_storageDirectory: hdfs://hadoop:9000/druid
+    druid_mapred_job_tracker_host: hadoop
+    druid_mapred_job_tracker_port: 8021
     HADOOP_USER_NAME: druid
 
 druidoverlord1:
@@ -178,8 +181,11 @@ druidoverlord1:
     druid_storage_storageDirectory: hdfs://hadoop:9000/druid
     druid_indexer_fork_property_druid_storage_type: hdfs
     druid_indexer_fork_property_druid_storage_storageDirectory: hdfs://hadoop:9000/druid
-    druid_indexer_task_hadoopWorkingPath: hdfs://hadoop:9000/druid-working
-    druid_indexer_task_defaultHadoopCoordinates: "[\"org.apache.hadoop:hadoop-client:2.0.0-cdh4.4.0\"]"
+    druid_indexer_task_hadoopWorkingPath: /druid/working
+    druid_indexer_task_defaultHadoopCoordinates: "[\"org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.4.0\"]"
+    druid_extensions_remoteRepositories: "[\"https://repository.cloudera.com/artifactory/cloudera-repos/\",\"http://repo1.maven.org/maven2/\",\"https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local\"]"
+    druid_mapred_job_tracker_host: hadoop
+    druid_mapred_job_tracker_port: 8021
     HADOOP_USER_NAME: druid
 
 druid:
