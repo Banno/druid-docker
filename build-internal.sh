@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAG="latest"
+TAG="0.7.1.1-hadoop-2.0.0-mr1-cdh4.4.0"
 
 docker build -t registry.banno-internal.com/druid-base:$TAG base
 docker build -t registry.banno-internal.com/druid-hadoop-base:$TAG hadoop-base
