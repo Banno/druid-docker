@@ -1,7 +1,7 @@
-FROM banno/druid-base:latest
+FROM registry.banno-internal.com/druid-hadoop-base:0.7.1.1-hadoop-2.0.0-mr1-cdh4.4.0
 
 MAINTAINER Zach Cox zach.cox@banno.com
 
-ADD twitter_realtime.spec /usr/local/druid/realtime/
+RUN /opt/druid/bin/pull-deps.sh '["io.druid.extensions:druid-hdfs-storage", "io.druid.extensions:druid-kafka-eight"]'
 
-ENTRYPOINT exec java $DRUID_COMMON_JAVA_OPTIONS -Xmx1g -Ddruid.port=$DRUID_PORT -Ddruid.realtime.specFile=/usr/local/druid/realtime/twitter_realtime.spec -Ddruid.processing.buffer.sizeBytes=104857600 -cp "/usr/local/druid/config/_common:/usr/local/druid/lib/*" io.druid.cli.Main server realtime
+ENTRYPOINT exec /opt/druid/bin/start-node.sh realtime
