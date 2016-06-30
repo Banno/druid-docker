@@ -1,3 +1,7 @@
+## Unsupported Project!
+
+**NOTE:** we are no longer using Druid, and therefore we are no longer supporting this repository or any Docker images built from it. It only remains on github as a reference for others. If you'd like to take over this repo, please open an issue.
+
 ## Overview
 
 Example of running Druid broker, coordinator, historical and overlord nodes in separate Docker containers, along with Zookeeper and Postgres in their own Docker containers, all wired together via fig.
